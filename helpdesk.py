@@ -290,6 +290,30 @@ tree2.heading(column4, text='성명')
 tree2.heading(column5, text='신청내용')
 tree2.heading(column6, text='기타입력')
 
+# 완료된 항목을 신청접수로 되돌리기
+def running(event=None):
+    selection = tree2.selection()
+    selection = selection[0]
+    data = tree2.item(selection)['values']
+    row_id = data[0] # 첫 번째 값인 id를 가져옴
+    c.execute("UPDATE App_DB SET column1 = ? WHERE id = ?", ("신청접수", row_id))
+    conn.commit()
+    update_all_table()
+    messagebox.showinfo('상태','신청접수')
+
+# 완료된 작업 취소하기
+cancel_btn = tk.Button(frame2, text='완료작업 취소하기', command=running, width=20, height=1, font=font_bold, relief='groove')
+cancel_btn.grid(row=3, column=0, padx=50, pady=30, sticky='sw')
+# 단축키 설명
+manual2 = tk.Label(frame2, text='| 탭이동 : Ctrl + 방향키 | 검색하기 : Ctrl + F | 수정하기 : F2 | 새로고침 : F5 | 신청접수와 작업완료 전환 : F8 |', font=font_mini)
+manual2.grid(padx=50, pady=20, sticky='sw')
+
+
+
+
+
+
+
 
 
 # def =============================================================
@@ -645,24 +669,6 @@ def delete_data2():
     conn.commit()
     # 테이블 갱신
     update_all_table()
-
-# 상태변경 : 신청접수
-def running(event=None):
-    selection = tree2.selection()
-    selection = selection[0]
-    data = tree2.item(selection)['values']
-    row_id = data[0] # 첫 번째 값인 id를 가져옴
-    c.execute("UPDATE App_DB SET column1 = ? WHERE id = ?", ("신청접수", row_id))
-    conn.commit()
-    update_all_table()
-    messagebox.showinfo('상태','신청접수')
-
-# 완료된 작업 취소하기
-cancel_btn = tk.Button(frame2, text='완료작업 취소하기', command=running, width=20, height=1, font=font_bold, relief='groove')
-cancel_btn.grid(row=3, column=0, padx=50, pady=30, sticky='sw')
-# 단축키 설명
-manual2 = tk.Label(frame2, text='| 탭이동 : Ctrl + 방향키 | 검색하기 : Ctrl + F | 수정하기 : F2 | 새로고침 : F5 | 신청접수와 작업완료 전환 : F8 |', font=font_mini)
-manual2.grid(padx=50, pady=20, sticky='sw')
 
 # 바인드 설정 =====================================================================================================
 ent1.bind('<Return>', next_entry)
