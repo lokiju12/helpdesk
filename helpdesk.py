@@ -209,38 +209,27 @@ def finished(event=None):
 finished_btn = tk.Button(btn_frame, width=10, text = '작업완료', command=finished, font=font_bold, relief='groove')
 finished_btn.grid(row=0, column=1, padx=20, pady=30, sticky='sw')
 
-# csv export Button
+# csv export
 def csv_export():
-    # 파일 탐색기 창 열기
-    file_path = filedialog.asksaveasfilename(defaultextension='.csv')
-    # 선택한 파일 경로가 있을 경우
-    if file_path:
-        # DB에서 데이터 추출
-        df = pd.read_sql_query("SELECT * from App_DB", conn)
-        # CSV 파일로 저장
+    file_path = filedialog.asksaveasfilename(defaultextension='.csv') # 탐색기 실행
+    if file_path: # if : 선택한 파일 경로가 있을 경우
+        df = pd.read_sql_query("SELECT * from App_DB", conn) # DB에서 데이터 추출하고
         df.to_csv(file_path, index=False, encoding='utf-8-sig') # csv 파일을 utf-8로 저장
-        # 저장 완료 메시지 박스 출력
-        messagebox.showinfo("완료", "파일 저장이 완료되었습니다.")
+        messagebox.showinfo("완료", "파일 저장이 완료되었습니다.") # 완료 메시지
 export_button = tk.Button(btn_frame, width=10, text='내보내기', command=csv_export, font=font_bold, relief='groove')
 export_button.grid(row=0, column=3, padx=20, pady=30, sticky='sw')
 
-# csv import Button
+# csv import
 def csv_import():
-    # 파일 탐색기 창 열기
-    file_path = filedialog.askopenfilename(defaultextension='.csv')
-    # 선택한 파일 경로가 있을 경우
-    if file_path:
-        # CSV 파일에서 데이터 읽어오기
-        df = pd.read_csv(file_path)
-        # DB에 데이터 추가
-        for row in df.itertuples():
+    file_path = filedialog.askopenfilename(defaultextension='.csv') # 탐색기 실행
+    if file_path: # if : 선택한 파일 경로가 있을 경우
+        df = pd.read_csv(file_path) # csv 데이터를 가져와서
+        for row in df.itertuples(): # DB에 데이터 추가
             c.execute("INSERT INTO App_DB (column1, column2, column3, column4, column5) VALUES (?, ?, ?, ?, ?)",
                         ('신청접수', row.column2, row.column3, row.column4, row.column5))
-        conn.commit()
-        # 트리뷰 업데이트
-        update_all_table()
-        # 불러오기 완료 메시지 박스 출력
-        messagebox.showinfo("완료", "파일 불러오기가 완료되었습니다.")
+        conn.commit() # DB 접속 종료
+        update_all_table() # 트리뷰 업데이트
+        messagebox.showinfo("완료", "파일 불러오기가 완료되었습니다.") # 완료 메시지
 import_button = tk.Button(btn_frame, width=10, text='가져오기', command=csv_import, font=font_bold, relief='groove')
 import_button.grid(row=0, column=2, padx=20, pady=30, sticky='sw')
 
@@ -327,17 +316,17 @@ def switch_tab(event=None, tab_index=None):
         num_tabs = notebook.index("end")  # 탭의 개수
         if event.keysym == "Right":
             next_tab = current_tab + 1 if current_tab < num_tabs - 1 else current_tab
-            # 다음 탭의 인덱스 (마지막 탭일 경우 현재 탭 유지)
+            # 다음 탭으로 이동 (마지막 탭일 경우 탭 유지)
         elif event.keysym == "Left":
             next_tab = current_tab - 1 if current_tab > 0 else current_tab
-            # 이전 탭의 인덱스 (첫 번째 탭일 경우 현재 탭 유지)
+            # 이전 탭으로 이동 (첫 번째 탭일 경우 탭 유지)
         else:
             return
     notebook.select(next_tab)
     if next_tab == 0: 
-        print('탭이동0') # 추가 기능 입력 가능
+        print('탭이동0') # 탭 이동시 추가 기능 입력 가능
     elif next_tab == 1:
-        print('탭이동1') # 추가 기능 입력 가능
+        print('탭이동1') # 탭 이동시 추가 기능 입력 가능
     current_tab = next_tab
 # 탭 전환 바인딩
 root.bind("<Control-Right>", switch_tab)
