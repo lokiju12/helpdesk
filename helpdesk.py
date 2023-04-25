@@ -6,7 +6,7 @@ from tkinter import filedialog
 import tkinter as tk
 import sqlite3
 import pandas as pd
-import time
+
 
 # db 연결
 conn = sqlite3.connect('data.db')
@@ -28,7 +28,8 @@ c.execute('''CREATE TABLE IF NOT EXISTS App_DB
             column3 TEXT,
             column4 TEXT,
             column5 TEXT,
-            column6 TEXT
+            column6 TEXT,
+            column7 TEXT
             )''')
 conn.commit()
 
@@ -55,24 +56,6 @@ root.rowconfigure(2, weight=1)
 date_frame = tk.Frame(root)
 date_frame.grid(row=0, column=0, padx=280, pady=20, sticky='sw')
 
-# 오늘 날짜 | 현재시간 설정
-weekdays_kr = ['월', '화', '수', '목', '금', '토', '일']
-date_label = tk.Label(date_frame, font=font_time)
-time_label = tk.Label(date_frame, font=font_time)
-def update_time():
-    current_time = time.strftime('현재시각 : %H시 %M분 |')
-    time_label.config(text=current_time)
-    time_label.after(1000, update_time)
-def update_date():
-    current_date = time.strftime('| %Y년 %m월 %d일 ') + weekdays_kr[time.localtime().tm_wday] + '요일 | '
-    date_label.config(text=current_date)
-    date_label.after(1000, update_date)
-def show():
-    date_label.grid(row=0, column=0, padx=0)
-    time_label.grid(row=0, column=1, padx=0)
-show()
-update_date()
-update_time()
 
 # Notebook - TAB 1 / TAB 2 
 notebook = ttk.Notebook(root)
@@ -109,14 +92,14 @@ ent2.grid(row=1, column=1, padx=30)
 lab3 = Label(input_frame, text=lab3, font=font_bold)
 lab3.grid(row=0, column=2, padx=30, sticky=W)
 
-ent3 = Entry(input_frame, width=60, font=font, relief='flat', highlightthickness=1)
+ent3 = Entry(input_frame, width=100, font=font, relief='flat', highlightthickness=1)
 ent3.config(highlightbackground='gray')
 ent3.grid(row=1, column=2, padx=30)
 
 lab4 = Label(input_frame, text=lab4, font=font_bold)
 lab4.grid(row=0, column=3, padx=30 ,sticky=W)
 
-ent4 = Entry(input_frame, width=30, font=font, relief='flat', highlightthickness=1)
+ent4 = Entry(input_frame, width=40, font=font, relief='flat', highlightthickness=1)
 ent4.config(highlightbackground='gray')
 ent4.grid(row=1, column=3, padx=30)
 
@@ -129,10 +112,10 @@ def work_data_count():
         data_count = len(tree.get_children())
         data_count_label.config(text=f' 신청접수 COUNT : {data_count} 건 ')    
     '''여백 설정을 위한 라벨 추가'''
-    temp_label = Label(option_frame, width=149)
+    temp_label = Label(option_frame, width=199)
     temp_label.grid(row=0, column=2)
-    data_count_label = Button(option_frame, width=26, height=1, font=font_bold, fg='gray20', text='', relief='groove')
-    data_count_label.grid(row=0, column=5, pady=10, )
+    data_count_label = Label(option_frame, width=30, height=1, font=('맑은 고딕', 15, 'bold'))
+    data_count_label.grid(row=0, column=5,)
     count() # count 실행
 
 
@@ -144,7 +127,7 @@ style.configure('Treeview',
                     background = '#D3D3D3',
                     foreground = 'black',
                     fieldbackground = '#D3D3D3',
-                    rowheight=25,
+                    rowheight=30,
                     font=font)    
 
 # Treeview1 생성 
@@ -156,10 +139,10 @@ column5 = '신청내용'
 column6 = '기타입력'
 
 tree = ttk.Treeview(frame1)
-tree.grid(row=2, column=0, columnspan=2, pady=0)
+tree.grid(row=2, column=0, columnspan=2, pady=10)
 
 yscrollcommand = ttk.Scrollbar(frame1, orient=VERTICAL, command=tree.yview)
-yscrollcommand.grid(row=2, column=2, pady=0)
+yscrollcommand.grid(row=2, column=2, pady=10)
 yscrollcommand.grid_configure(sticky='ns')
 
 tree.tag_configure('Treeview.Heading', **{'font': font})
@@ -182,8 +165,8 @@ tree.column(column1, stretch=NO, minwidth=0, width=0) # 폭 조정으로 column1
 tree.column(column2, width=100, anchor="center")
 tree.column(column3, width=200, anchor="center")
 tree.column(column4, width=150, anchor="center")
-tree.column(column5, width=600)
-tree.column(column6, width=300)
+tree.column(column5, width=1000)
+tree.column(column6, width=400)
 
 tree.heading(column1, text='번호')
 tree.heading(column2, text='접수상태')
@@ -194,7 +177,7 @@ tree.heading(column6, text='기타입력')
 
 # Button Frame
 btn_frame = tk.Frame(frame1)
-btn_frame.grid(row=5, column=0, padx=30, pady=0, sticky='sw')
+btn_frame.grid(row=5, column=0, padx=30, pady=10, sticky='sw')
 
 # Finished Button
 def finished(event=None):
@@ -207,7 +190,7 @@ def finished(event=None):
     update_all_table()
     messagebox.showinfo('상태','전체_DB')
 finished_btn = tk.Button(btn_frame, width=10, text = '작업완료', command=finished, font=font_bold, relief='groove')
-finished_btn.grid(row=0, column=1, padx=20, pady=30, sticky='sw')
+finished_btn.grid(row=0, column=1, padx=20, pady=15, sticky='sw')
 
 # csv export
 def csv_export():
@@ -217,7 +200,7 @@ def csv_export():
         df.to_csv(file_path, index=False, encoding='utf-8-sig') # csv 파일을 utf-8로 저장
         messagebox.showinfo("완료", "파일 저장이 완료되었습니다.") # 완료 메시지
 export_button = tk.Button(btn_frame, width=10, text='내보내기', command=csv_export, font=font_bold, relief='groove')
-export_button.grid(row=0, column=3, padx=20, pady=30, sticky='sw')
+export_button.grid(row=0, column=3, padx=20, pady=15, sticky='sw')
 
 # csv import
 def csv_import():
@@ -231,15 +214,15 @@ def csv_import():
         update_all_table() # 트리뷰 업데이트
         messagebox.showinfo("완료", "파일 불러오기가 완료되었습니다.") # 완료 메시지
 import_button = tk.Button(btn_frame, width=10, text='가져오기', command=csv_import, font=font_bold, relief='groove')
-import_button.grid(row=0, column=2, padx=20, pady=30, sticky='sw')
+import_button.grid(row=0, column=2, padx=20, pady=15, sticky='sw')
 
-# Text Frame
-text_frame = tk.Frame(frame1)
-text_frame.grid(row=6, column=0, padx=0, pady=0, sticky='sw')
+# # Text Frame
+# text_frame = tk.Frame(frame1)
+# text_frame.grid(row=5, column=1, padx=0, pady=0,)
 
-# Manual Label
-manual = tk.Label(text_frame, text='| 탭이동 : Ctrl + 방향키 | 검색하기 : Ctrl + F | 수정하기 : F2 | 새로고침 : F5 | 신청접수와 작업완료 전환 : F8 |', font=font_mini)
-manual.grid(padx=50, pady=20, sticky='sw')
+# # Manual Label
+# manual = tk.Label(text_frame, text='| 탭이동 : Ctrl + 방향키 | 검색하기 : Ctrl + F | 수정하기 : F2 | 새로고침 : F5 | 신청접수와 작업완료 전환 : F8 |', font=font_mini)
+# manual.grid(padx=50, pady=0, sticky='sw')
 
 
 
@@ -256,13 +239,13 @@ column5 = '신청내용'
 column6 = '기타입력'
 
 tree2 = ttk.Treeview(frame2)
-tree2.grid(row=2, column=0, columnspan=2, pady=0)
+tree2.grid(row=2, column=0, columnspan=2, pady=10)
 
 yscrollcommand2 = ttk.Scrollbar(frame2, orient=VERTICAL, command=tree2.yview)
-yscrollcommand2.grid(row=2, column=2, pady=0, sticky="ns")
+yscrollcommand2.grid(row=2, column=2, pady=10, sticky="ns")
 
 tree2.tag_configure('Treeview.Heading', **{'font': font}) # 스타일 적용
-tree2.configure(height=28)
+tree2.configure(height=26)
 tree2.configure(yscrollcommand=yscrollcommand2.set) # 높이 조정
 tree2.columnconfigure(0, weight=1) # column weight 설정
 tree2.rowconfigure(0, weight=1) # row weight 설정
@@ -280,8 +263,8 @@ tree2.column(column1, stretch=NO, minwidth=0, width=0) # 폭 조정으로 column
 tree2.column(column2, width=100, anchor="center")
 tree2.column(column3, width=200, anchor="center")
 tree2.column(column4, width=150, anchor="center")
-tree2.column(column5, width=600)
-tree2.column(column6, width=300)
+tree2.column(column5, width=1000)
+tree2.column(column6, width=400)
 
 tree2.heading(column1, text='번호')
 tree2.heading(column2, text='접수상태')
@@ -303,10 +286,10 @@ def running(event=None):
 
 # 완료된 작업 취소하기
 cancel_btn = tk.Button(frame2, text='완료작업 취소하기', command=running, width=20, height=1, font=font_bold, relief='groove')
-cancel_btn.grid(row=3, column=0, padx=50, pady=30, sticky='sw')
-# 단축키 설명
-manual2 = tk.Label(frame2, text='| 탭이동 : Ctrl + 방향키 | 검색하기 : Ctrl + F | 수정하기 : F2 | 새로고침 : F5 | 신청접수와 작업완료 전환 : F8 |', font=font_mini)
-manual2.grid(padx=50, pady=20, sticky='sw')
+cancel_btn.grid(row=3, column=0, padx=50, pady=15, sticky='sw')
+# # 단축키 설명
+# manual2 = tk.Label(frame2, text='| 탭이동 : Ctrl + 방향키 | 검색하기 : Ctrl + F | 수정하기 : F2 | 새로고침 : F5 | 신청접수와 작업완료 전환 : F8 |', font=font_mini)
+# manual2.grid(padx=50, pady=20, sticky='sw')
 
 
 
@@ -396,26 +379,26 @@ def on_double_click(event):
     new_lab1.grid(row=0, column=0, sticky=W)
     new_ent1 = Entry(new_ent_frame, font=font, width=50, relief='flat', highlightthickness=1)
     new_ent1.config(highlightbackground='gray')
-    new_ent1.grid(row=0, column=1, padx=10, pady=10)
+    new_ent1.grid(row=0, column=1, padx=10, pady=10, sticky=W)
     new_ent1.focus() # new_ent1에 프롬프트 설정
     
     new_lab2 = Label(new_ent_frame, text=new_lab2, font=font_bold)
     new_lab2.grid(row=1, column=0, sticky=W)
     new_ent2 = Entry(new_ent_frame, font=font, width=50, relief='flat', highlightthickness=1)
     new_ent2.config(highlightbackground='gray')
-    new_ent2.grid(row=1, column=1, padx=10, pady=10)
+    new_ent2.grid(row=1, column=1, padx=10, pady=10, sticky=W)
     
     new_lab3 = Label(new_ent_frame, text=new_lab3, font=font_bold)
     new_lab3.grid(row=2, column=0, sticky=W)
-    new_ent3 = Entry(new_ent_frame, font=font, width=50, relief='flat', highlightthickness=1)
+    new_ent3 = Entry(new_ent_frame, font=font, width=100, relief='flat', highlightthickness=1)
     new_ent3.config(highlightbackground='gray')
-    new_ent3.grid(row=2, column=1, padx=10, pady=10)
+    new_ent3.grid(row=2, column=1, padx=10, pady=10, sticky=W)
     
     new_lab4 = Label(new_ent_frame, text=new_lab4, font=font_bold)
     new_lab4.grid(row=3, column=0, sticky=W)
     new_ent4 = Entry(new_ent_frame, font=font, width=50, relief='flat', highlightthickness=1)
     new_ent4.config(highlightbackground='gray')
-    new_ent4.grid(row=3, column=1, padx=10, pady=10)
+    new_ent4.grid(row=3, column=1, padx=10, pady=10, sticky=W)
 
     # 기존 DB 데이터를 ent에 입력
     new_ent1.insert(0, values[2])  # column3
@@ -562,6 +545,18 @@ def update_all_table():
     update_complete_table() # tree2의 업데이트
     work_data_count() # tree의 접수량 라벨 업데이트
 
+
+
+
+
+
+
+
+
+
+
+
+
 # 신청접수 영역 DB 업데이트
 def update_receipt_table(): 
     # Treeview 모든 데이터 삭제
@@ -571,12 +566,43 @@ def update_receipt_table():
         # 신청접수인 row 값만 가져옴
         c.execute("SELECT * FROM App_DB WHERE column1=?", ('신청접수',))
         rows = c.fetchall()
-        # column6 기준으로 정렬
-        rows_sorted = sorted(rows, key=lambda x: x[5])
+        # column6, column5 기준으로 정렬
+        rows_sorted = sorted(rows, key=lambda x: (x[5], x[4]))
         # 정렬된 데이터 Treeview에 삽입
         for row in rows_sorted:
             # Treeview에 삽입
             tree.insert("", "end", values=row) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # 신청접수 영역 DB 업데이트
+# def update_receipt_table(): 
+#     # Treeview 모든 데이터 삭제
+#     tree.delete(*tree.get_children()) 
+#     with sqlite3.connect('data.db') as conn:
+#         c = conn.cursor()
+#         # 신청접수인 row 값만 가져옴
+#         c.execute("SELECT * FROM App_DB WHERE column1=?", ('신청접수',))
+#         rows = c.fetchall()
+#         # column6 기준으로 정렬
+#         rows_sorted = sorted(rows, key=lambda x: x[5])
+#         # 정렬된 데이터 Treeview에 삽입
+#         for row in rows_sorted:
+#             # Treeview에 삽입
+#             tree.insert("", "end", values=row) 
 
 # 전체DB 영역 DB 업데이트
 def update_complete_table(): 
