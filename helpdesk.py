@@ -354,6 +354,11 @@ for col in tree2['columns']:
 
 # Treeview 더블 클릭을 통한 데이터 수정
 def on_double_click(event):
+    # 첫 번째 열(헤더)에서 더블클릭이 일어나면 함수를 끝냄
+    if event.widget.identify_region(event.x, event.y) == 'heading':
+        print('heading 더블 클릭 차단')
+        return
+    
     # 선택한 행의 값들 가져오기
     selection = tree.selection()
     if len(selection) == 0:
